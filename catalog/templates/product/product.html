@@ -19,7 +19,7 @@
 
                         <h1 class="card-title pricing-card-title">{{ object.price }} $</h1>
                         <p>{{ object.description | truncatechars:100 }}</p>
-                        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Buy</button>
+                        <a href="{% url 'catalog:product_info' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-primary">Buy</a>
                     </div>
                 </div>
             </div>
