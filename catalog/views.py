@@ -27,3 +27,13 @@ def product(request, pk):
         'title': f'Products from {category_item.name}',
     }
     return render(request, 'product/product.html', context)
+
+
+def product_info(request, pk):
+    product_item = Product.objects.get(pk=pk)
+    context = {
+        "object_item": product_item,
+        "title": f'Product {product_item.name}',
+    }
+    print(context["object_item"], product_item.name)
+    return render(request, 'product/product_item.html', context)
