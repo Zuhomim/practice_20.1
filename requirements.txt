@@ -19,3 +19,8 @@ sqlparse==0.4.4
 stack-data==0.6.3
 traitlets==5.14.0
 wcwidth==0.2.12
+
+pytils~=0.4.1
+pip~=23.2.1
+wheel~=0.41.2
+setuptools~=68.2.2
