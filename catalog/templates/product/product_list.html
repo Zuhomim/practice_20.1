@@ -6,10 +6,14 @@
             <div class="col-3">
                 <div class="card mb-4 box-shadow">
                     <div class="card-header">
-                        <h4 class="my-0 font-weight-normal">{{ object.name }}</h4>
+                        <div class="col-12 mb-3">
+                            <a type="button" class="btn btn-primary" href="{% url 'catalog:product_create' object.pk %}">Добавить продукт</a>
+                        </div>
+                        <hr>
+                        <h4 class="my-0 font-weight-normal">{{ object.name }} ({{object.active_version_name}})</h4>
                     </div>
                     <div class="card-body">
-                        <img class="card-img-top"
+                        <img class="card-img-top" height="200"
                              src="{% mediapath object.image %}">
 <!--                            src="{{ object.image|mymedia }}">-->
 
@@ -20,6 +24,7 @@
                         <h1 class="card-title pricing-card-title">{{ object.price }} $</h1>
                         <p>{{ object.description | truncatechars:100 }}</p>
                         <a href="{% url 'catalog:view_product' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-primary">Buy</a>
+                        <a href="{% url 'catalog:product_update' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-warning">Update</a>
                     </div>
                 </div>
             </div>
