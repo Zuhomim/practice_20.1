@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 NULLABLE = {'null': True, 'blank': True}
@@ -31,3 +32,25 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'
+
+
+class Version(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    version_number = models.IntegerField(verbose_name="Номер версии")
+    version_name = models.CharField(max_length=50, verbose_name="Название версии")
+    is_current = models.BooleanField(**NULLABLE, verbose_name='Признак версии')
+
+    def __str__(self):
+        return f'{self.product} ({self.version_name})'
+
+    def clean(self) -> None:
+        super().clean()
+        if Version.objects.filter(
+                product=self.product,
+                is_current=True
+        ).exists():
+            raise ValidationError('You can set only one active version.')
+
+    class Meta:
+        verbose_name = 'Версия'
+        verbose_name_plural = 'Версии'
