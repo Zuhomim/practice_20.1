@@ -20,8 +20,8 @@ class ProductListView(ListView):
         for product in context_data['object_list']:
             active_version = product.version_set.filter(is_current=True).first()
             if active_version:
-                product.active_version_number = active_version.version_number
-                product.active_version_name = active_version.version_name
+                product.active_version_number = active_version.number
+                product.active_version_name = active_version.name
             else:
                 product.active_version_number = None
                 product.active_version_name = None
@@ -46,6 +46,13 @@ class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('catalog:catalog')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        self.object.save()
+
+        return super().form_valid(form)
 
 
 class ProductUpdateView(UpdateView):

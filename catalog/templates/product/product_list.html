@@ -7,7 +7,9 @@
                 <div class="card mb-4 box-shadow">
                     <div class="card-header">
                         <div class="col-12 mb-3">
-                            <a type="button" class="btn btn-primary" href="{% url 'catalog:product_create' object.pk %}">Добавить продукт</a>
+                            {% if user.is_authenticated %}
+                                <a type="button" class="btn btn-primary" href="{% url 'catalog:product_create' object.pk %}">Добавить продукт</a>
+                            {% endif %}
                         </div>
                         <hr>
                         <h4 class="my-0 font-weight-normal">{{ object.name }} ({{object.active_version_name}})</h4>
@@ -22,9 +24,12 @@
 
 
                         <h1 class="card-title pricing-card-title">{{ object.price }} $</h1>
+                        <h4 class="card-title pricing-card-title">{{ object.owner|default:"-" }}</h4>
                         <p>{{ object.description | truncatechars:100 }}</p>
                         <a href="{% url 'catalog:view_product' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-primary">Buy</a>
-                        <a href="{% url 'catalog:product_update' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-warning">Update</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'catalog:product_update' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-warning">Update</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
