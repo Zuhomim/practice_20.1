@@ -24,4 +24,5 @@ urlpatterns = [
     path('', include('catalog.urls', namespace='catalog')),
     path('blog/', include('blog.urls', namespace='blog')),
     path('users/', include('users.urls', namespace='users')),
+    path('', include('django.contrib.auth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
