@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from config import settings
+
 NULLABLE = {'null': True, 'blank': True}
 
 
@@ -26,6 +28,8 @@ class Product(models.Model):
     created_at = models.DateTimeField(verbose_name='Дата создания')
     changed_at = models.DateTimeField(verbose_name='Дата изменения')
 
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='владелец')
+
     def __str__(self):
         return f'{self.name} ({self.category})'
 
@@ -36,12 +40,12 @@ class Product(models.Model):
 
 class Version(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    version_number = models.IntegerField(verbose_name="Номер версии")
-    version_name = models.CharField(max_length=50, verbose_name="Название версии")
+    number = models.IntegerField(verbose_name="Номер версии")
+    name = models.CharField(max_length=50, verbose_name="Название версии")
     is_current = models.BooleanField(**NULLABLE, verbose_name='Признак версии')
 
     def __str__(self):
-        return f'{self.product} ({self.version_name})'
+        return f'{self.product} ({self.name})'
 
     def clean(self) -> None:
         super().clean()
