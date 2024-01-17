@@ -2,7 +2,6 @@ from django.contrib.auth.views import LoginView, PasswordResetView
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
-from django.utils.http import urlsafe_base64_decode
 from django.views import View
 from django.views.generic import CreateView, UpdateView
 
@@ -34,18 +33,8 @@ class RegisterView(CreateView):
 
 class ConfirmEmailView(View):
 
-    # def get_user(uuid):
-    #     try:
-    #         uid = urlsafe_base64_decode(uuid).decode()
-    #         user = User.objects.get(pk=uid)
-    #     except (TypeError, ValueError, OverflowError):
-    #         user = None
-    #     return user
-
     def get(self, request, uuid):
-        # user = self.get_user(uidb64)
         user = User.objects.get(uuid=uuid)
-        # if user is not None and user.user_token == user_token:
         user.is_active = True
         user.is_staff = True
         user.save()
