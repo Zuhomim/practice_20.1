@@ -20,6 +20,7 @@ class RegisterView(CreateView):
         host = "http://127.0.0.1:8000"
         if form.is_valid():
             new_user = form.save()
+            new_user.is_active = False
             send_mail(
                 subject='Завершение регистрации',
                 message=f"Для завершения регистрации, пожалуйста перейдите по ссылке:"
