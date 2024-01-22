@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import inlineformset_factory
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
@@ -42,7 +43,7 @@ def contacts(request):
     return render(request, 'contacts/contact_list.html')
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('catalog:catalog')
@@ -55,7 +56,7 @@ class ProductCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
 
@@ -84,6 +85,20 @@ class ProductUpdateView(UpdateView):
             formset.save()
         return super().form_valid(form)
 
+    def test_func(self):
+        _user = self.request.user
+        _instance: Product = self.get_object()
+        custom_perms: tuple = (
+            'catalog.set_is_published',
+            'catalog.set_category',
+            'catalog.set_description',
+        )
+
+        if _user == _instance.owner:
+            return True
+        elif _user.groups.filter(name='Модератор') and _user.has_perms(custom_perms):
+            return True
+        return self.handle_no_permission()
 
 # FBV
 # def catalog(request):
