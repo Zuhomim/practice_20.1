@@ -1,5 +1,6 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.forms import inlineformset_factory
+from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
@@ -15,6 +16,13 @@ class CategoryListView(ListView):
 class ProductListView(ListView):
     model = Product
     template_name = 'product/product_list.html'
+
+    def get_queryset(self):
+
+        return super().get_queryset().filter(
+            category=self.kwargs.get('pk'),
+            owner=self.request.user
+        )
 
     def get_context_data(self, *args, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -56,7 +64,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(PermissionRequiredMixin, UpdateView):
+class ProductUpdateView(PermissionRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
     form_class = ProductForm
     permission_required = 'catalog.change_product'
@@ -106,6 +114,12 @@ class ProductUpdateView(PermissionRequiredMixin, UpdateView):
         elif _user.groups.filter(name='Модератор') and _user.has_perms(custom_perms):
             return True
         return self.handle_no_permission()
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner != self.request.user and not self.request.user.is_staff:
+            raise Http404("Вы не являетесь владельцем этого товара")
+        return self.object
 
 
 # FBV
