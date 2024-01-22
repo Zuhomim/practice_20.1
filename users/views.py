@@ -1,7 +1,8 @@
 from django.contrib.auth.views import LoginView, PasswordResetView
 from django.core.mail import send_mail
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import CreateView, UpdateView
 
 from config import settings
@@ -16,15 +17,31 @@ class RegisterView(CreateView):
     success_url = reverse_lazy('users:login')
 
     def form_valid(self, form):
-        new_user = form.save()
-        send_mail(
-            subject='Поздравляем с успешной регистрацией!',
-            message='Добро пожаловать на нашу платформу!',
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[new_user.email, ]
-        )
+        host = "http://127.0.0.1:8000"
+        if form.is_valid():
+            new_user = form.save()
+            new_user.is_active = False
+            send_mail(
+                subject='Завершение регистрации',
+                message=f"Для завершения регистрации, пожалуйста перейдите по ссылке:"
+                        f"\n{host}{reverse('users:registration_successful', kwargs={'uuid': new_user.uuid})}",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[new_user.email, ]
+            )
 
         return super().form_valid(form)
+
+
+class ConfirmEmailView(View):
+
+    def get(self, request, uuid):
+        user = User.objects.get(uuid=uuid)
+        user.is_active = True
+        user.is_staff = True
+        user.save()
+        user.is_active = True
+        user.save()
+        return render(request, 'users/registration_successful.html')
 
 
 class ProfileView(UpdateView):
@@ -58,3 +75,4 @@ def generate_new_password(request):
 
 class UserPasswordResetView(PasswordResetView):
     template_name = 'users/password_reset.html'
+    success_url = reverse_lazy('users:login')

@@ -17,6 +17,21 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
         model = Product
         fields = '__all__'
 
+        permissions = [
+            (
+                'set_is_published',
+                'Can change is_published'
+            ),
+            (
+                'set_description',
+                'Can change description'
+            ),
+            (
+                'set_category',
+                'Can change category'
+            )
+        ]
+
     def clean_name(self):
         cleaned_data = self.cleaned_data['name']
         for item in self.excluded_list:
@@ -37,4 +52,3 @@ class VersionForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Version
         fields = '__all__'
-        # exclude = ('is_active',)
