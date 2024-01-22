@@ -52,3 +52,26 @@ class VersionForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Version
         fields = '__all__'
+
+
+class ProductFormModerator(StyleFormMixin, forms.ModelForm):
+
+    excluded_list = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар']
+
+    class Meta:
+        model = Product
+        fields = ('description', 'category', 'is_published',)
+
+    def clean_name(self):
+        cleaned_data = self.cleaned_data['name']
+        for item in self.excluded_list:
+            if item in cleaned_data:
+                raise forms.ValidationError('Ошибка, связанная с недопустимым названием')
+        return cleaned_data
+
+    def clean_description(self):
+        cleaned_data = self.cleaned_data['description']
+        for item in self.excluded_list:
+            if item in cleaned_data:
+                raise forms.ValidationError('Ошибка, связанная с недопустимым описанием')
+        return cleaned_data
