@@ -7,10 +7,15 @@ from django.views.generic import DetailView, ListView, CreateView, UpdateView
 
 from catalog.forms import ProductForm, VersionForm, ProductFormModerator
 from catalog.models import Category, Product, Version
+from catalog.services import get_cached_categories
 
 
 class CategoryListView(ListView):
     model = Category
+    extra_context = {
+        'object_list': get_cached_categories(),
+        'title': 'Категории'
+    }
 
 
 class ProductListView(ListView):
